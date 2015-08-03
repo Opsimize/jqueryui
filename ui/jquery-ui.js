@@ -1123,6 +1123,12 @@ $.widget("ui.draggable", $.ui.mouse, {
 		this.originalPageX = event.pageX;
 		this.originalPageY = event.pageY;
 
+		this.parentScrollingElement = $('#scrollable');
+		
+		if (this.parentScrollingElement) {
+			this.originalOffsetY = $(this.parentScrollingElement).scrollTop();
+		}
+
 		//Adjust the mouse offset relative to the helper if "cursorAt" is supplied
 		(o.cursorAt && this._adjustOffsetFromHelper(o.cursorAt));
 
@@ -1178,7 +1184,8 @@ $.widget("ui.draggable", $.ui.mouse, {
 			this.helper[0].style.left = this.position.left+"px";
 		}
 		if(!this.options.axis || this.options.axis !== "x") {
-			this.helper[0].style.top = this.position.top+"px";
+			var offsetModify = $(this.parentScrollingElement).scrollTop() || 0;
+			this.helper[0].style.top = (this.position.top - (this.originalOffsetY - offsetModify)) + "px";
 		}
 		if($.ui.ddmanager) {
 			$.ui.ddmanager.drag(this, event);
